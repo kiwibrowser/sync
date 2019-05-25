@@ -5,6 +5,11 @@ Copyright 2019 Geometry OU / Kiwi Browser
 
 Licensed under GPL
 
+Precepts:
+  - Sync server *can* be compromised, and this should *not* impact user privacy.
+  - The user should not have to trust the Sync server.
+  - Users prefers to be anonymous (avoid Google SSO for example).
+
 The main concept:
   - Each user generates a 32 bytes user ID {userId} derived from a passphrase provided by the user.
   - Sync server allocates one folder to each user.
