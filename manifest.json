@@ -1,0 +1,11 @@
+{
+  "name": "Kiwi Sync",
+  "version": "1.0",
+  "description": "Kiwi Sync is an extension to synchronize your bookmarks and profile across your browsers (including Kiwi Browser)",
+  "background": {
+    "scripts": ["firebase-app.js", "firebase-auth.js", "firebase-firestore.js", "background.js"],
+    "persistent": true
+  },
+  "permissions": ["bookmarks"],
+  "manifest_version": 2
+}
