@@ -5,6 +5,8 @@ Copyright 2019 Geometry OU / Kiwi Browser
 
 Licensed under GPL
 
+![cloud sync](https://cloud.google.com/images/firestore/sync-data-across-devices.png)
+
 Precepts:
   - Sync server *can* be compromised, and this should *not* impact user privacy.
   - The user should not have to trust the Sync server.
