@@ -1,10 +1,22 @@
+*{
+  box-sizing: border-box;
+}
 body {
   min-width: 300px;
   width: 300px;
   font-size: 13px;
   color: #222;
 }
-
+.fld-icon{
+  height: 1rem;
+  margin-right: 5px;
+}
+.fld-label{
+  display: flex;
+    align-items: center;
+  width: 100%;
+  padding: .5rem;
+}
 .search:not(focus) {
   padding: 5px;
   border-radius: 5px; 
@@ -30,39 +42,6 @@ body {
 ul {
   list-style:none;
   padding-left: 1.75em;
-  li {
-    border-bottom-left-radius:.75em;
-    border-top-left-radius:.75em;
-    margin:2px 0;
-    position:relative;
-    a {
-      background-color:#eee;
-      border-radius:50%;
-      color:#000;
-      display:inline-block;
-      // font-weight:bold;
-      height:1.5em;
-      left:-1.5em;
-      line-height:1.5em;
-      position:absolute;
-      text-align:center;
-      text-decoration:none;
-      width:1.5em;
-      &.plus {
-        background-color:#ded;
-      }
-      &.minus {
-        background-color:#eee;
-      }
-      &:active {
-        top:1px;
-      }
-    }
-    span {
-      display:inline-block;
-      margin:.25em .5em;
-    }
-  }
 }
 
 .top-right {

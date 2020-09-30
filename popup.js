@@ -52,17 +52,18 @@ function getChildren(parentId) {
     return item.parentId === parentId;
   });
 }
-
+const folderIcon = '<svg class="fld-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>';
 function generateListItem(query, item) {
   const li = document.createElement('li');
   li.id = 'item-' + item.id;
   li.tabIndex = 0;
-  if (hasChildren(item.id)) {
-    const a = document.createElement('a');
+  const a = document.createElement('a');
+  if (hasChildren(item.id)) {//Check if it's a bookmark ( Check One)
+    
     a.href = '#';
     a.tabIndex = -1;
-    a.textContent = '+';
-    a.classList.add('plus');
+    
+    a.classList.add('fld-label');
     a.addEventListener('click', expand);
     li.appendChild(a);
   }
@@ -80,16 +81,17 @@ function generateListItem(query, item) {
   if (item.device && item.device != localStorage.deviceId && document.getElementById('searchField').value)
     sanitizedtext += ' <span class="source">' + item.device + '</span>';
   itemlabel.innerHTML = ' ' + sanitizedtext;
-  if (item.url) {
+  if (item.url) {//Check if it's a bookmark (Check Two)
     const itemlink = document.createElement('a');
     itemlink.href = item.url;
     itemlink.target = '_blank';
     itemlink.appendChild(itemlabel);
     span.appendChild(itemlink);
+    li.appendChild(span);
   } else {
-    span.appendChild(itemlabel);
+    a.innerHTML = folderIcon+sanitizedtext;
   }
-  li.appendChild(span);
+  
   return li;
 }
 
@@ -118,7 +120,6 @@ function expand(event) {
   parent.appendChild(ul);
   et.classList.remove('plus');
   et.classList.add('minus');
-  et.textContent = '-';
   et.removeEventListener('click', expand);
   et.addEventListener('click', collapse);
   console.timeEnd('expand');
@@ -134,7 +135,6 @@ function collapse(event) {
   parent.removeChild(ul);
   et.classList.remove('minus');
   et.classList.add('plus');
-  et.textContent = '+';
   et.removeEventListener('click', collapse);
   et.addEventListener('click', expand);
   if (currently_selected_elem()) {
