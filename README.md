@@ -19,18 +19,18 @@ What's implemented:
   - Keyboard shortcut
   - Keyboard navigation with arrows
 
-==
 WARNING: THIS EXTENSION IS IN DEVELOPMENT:
+==
   This is an extension that will send your bookmarks to a private folder created specifically for you on a public server.
 
   The bookmarks are encrypted, and there is strong encryption (heh! there's a challenge for you to break it!).
 
-  There are NO KNOWN WAYS to decrypt this data. However:
+  There are NO KNOWN WAYS to decrypt user data.
+  However:
   This extension is in DEVELOPMENT and provided WITHOUT ANY GUARANTEE. It is NOT recommended to use it.
   The bookmarks you are syncing may be LEAKED. Do not sync secrets.
   Do not use it in a profile where your bookmarks are secret until it is thoroughly tested
   or if you are not ready to accept to lose your local bookmarks in case of a bug.
-==
 
 What's missing:
   - Mobile UI (to use inside Kiwi!)
