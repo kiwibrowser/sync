@@ -205,4 +205,10 @@ async function main() {
   }
 }
 
+//Message listener
+chrome.runtime.onMessage.addListener((request) => {
+  if (request === "showOptions") {//Check the request
+    chrome.runtime.openOptionsPage();//Open the settings page 
+  }
+});
 main();

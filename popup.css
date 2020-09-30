@@ -17,6 +17,7 @@ body {
   width: 100%;
   padding: .5rem;
 }
+
 .search:not(focus) {
   padding: 5px;
   border-radius: 5px; 
