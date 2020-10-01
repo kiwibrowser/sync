@@ -1,26 +1,120 @@
+//Custom Toast class for notification
+function Notif(option) {
+    //Configuration
+    var el = this;
+    el.self = document.querySelector('.toast-message');
+    el.message = document.querySelector('.message');
+    el.top = option.topPos;
+    el.classNames = option.classNames;
+    el.autoClose = (typeof option.autoClose === "boolean") ? option.autoClose : false;
+    el.autoCloseTimeout = (option.autoClose && typeof option.autoCloseTimeout === "number") ? option.autoCloseTimeout : 3000;
+    //Methods
+    el.reset = function () {
+        (el.message).innerHTML = "";
+        el.self.classList.remove(el.classNames);
+    }
+    el.showN = function (msg, type) {
+        el.reset();
+        el.message.innerHTML = msg;
+        el.self.style.top = el.top;
+        el.self.classList.add(type);
 
-document.getElementById('add_new_device_button').addEventListener('click', function (e) {
-    var generated_html = '';
-    generated_html += '<h3>To sync a new device enter the same key on all the devices:</h3>Your current key is: ';
-    generated_html += '<div style="width: 200px; padding: 3px; border: 2px dotted; word-break: break-all;"><i>' + localStorage.passphrase + '</i></div>';
-  //  generated_html += '<br /><input type="button" id="action_key" value="Enter a new key" style="font-size: 28px; font-weight: bold;" />';
-    document.getElementById('content').innerHTML = generated_html;
-    alert('You are about to share bookmarks and tabs with other devices');
-    var passphrase = prompt("Copy-paste the same key on all your devices", localStorage.passphrase);
-    if (passphrase == null || !window.atob(passphrase))
-    {
-      alert('Incorrect key');
-      return;
+        if (el.autoClose) {
+            setTimeout(function () {
+                el.hideN();
+            }, el.autoCloseTimeout);
+        }
     }
-    localStorage.passphrase = passphrase;
-    var default_devicename = "Device-" + Math.random();
-    if (typeof localStorage.deviceId != 'undefined')
-      default_devicename = localStorage.deviceId;
-    var deviceid = prompt("Enter device name", default_devicename);
-    if (deviceid == null)
-    {
-      alert('Incorrect device name');
-      return;
-    }
+    el.hideN = function () {
+        el.self.style.top = '-100%';
+        el.reset();
+    };
+}
+//Initialize a Toast message object 
+var notification = new Notif({
+    topPos: '200px',
+    classNames: 'success',
+    autoClose: true,
+    autoCloseTimeout: 2000
+});
+
+//Get sync key
+var passphrase = localStorage.passphrase;
+//Get device name (id)
+var deviceId = localStorage.deviceId;
+
+if (typeof localStorage.deviceId == 'undefined') {
+    deviceId = "Device-" + Math.random();
     localStorage.deviceId = deviceid;
-  });
+}
+
+
+
+
+
+//Get input elements
+const input_synckey = document.getElementById("sync-key");
+const input_devicename = document.getElementById("device-name");
+const save_buttno = document.getElementById("save");
+
+
+
+//Function to paste from clipboard
+async function pasteFromClip () {
+    const text = await navigator.clipboard.readText();
+    input_synckey.value = text;
+    notification.showN('Sync key has been pasted from clipboard !', 'success');
+  }
+// Function to copy to clipboard
+function copyToClip(str) {
+    const el = document.createElement('textarea');
+    el.value = str;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    const selected =
+        document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
+    el.select();
+    document.execCommand('copy');
+    el.parentNode.removeChild(el);
+    if (selected) {
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(selected);
+    }
+    notification.showN('Your key has been copied to clipboard !', 'success');
+}
+
+// set-up values and initialize listeners
+input_devicename.value = deviceId;
+
+input_synckey.value = passphrase;
+
+document.getElementById("copy-key").addEventListener('click', () => {
+    copyToClip(passphrase);
+});
+document.getElementById("save").addEventListener('click', () => {
+    save_settings();
+});
+document.getElementById("paste-key").addEventListener('click', () => {
+    pasteFromClip();
+});
+
+
+//Function to save settings( to localstorage)
+function save_settings() {
+    let key =input_synckey.value.trim();
+    if (key.length == 0 || !window.atob(input_synckey.value)) {
+        notification.showN('Sync key not valid', 'danger');
+        return;
+    }
+    //Remove white spaces at start/end
+    let id = input_devicename.value.trim();
+    if (id.length==0) {//Check if device name is not empty
+        notification.showN('Invalid device name', 'danger');
+        return;
+    }
+    localStorage.passphrase = input_synckey.value;
+    localStorage.deviceId = input_devicename.value;
+    notification.showN('Settings saved correctly!', 'success');
+}

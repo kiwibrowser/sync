@@ -1,5 +1,6 @@
 *{
   box-sizing: border-box;
+  border-spacing: 0;
 }
 body {
   min-width: 300px;

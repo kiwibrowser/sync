@@ -1,15 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sync - Sttings</title>
+    <style>
+        /* ---------------- Basic reset and improvements --------------- */
+        * {
+            box-sizing: border-box;
+            border-spacing: 0;
+        }
+
+        main {
+            margin: auto;
+            width: 100%;
+            max-width: 60rem;
+            padding: 4rem 0.5rem 0rem;
+            overflow-x: hidden;
+        }
+
+        section,
+        header {
+            padding: 2rem 1rem;
+        }
+
+        hr {
+            border: 0;
+            border-top: 0.1rem solid #f4f5f6;
+        }
+
+        header,
+        footer,
+        figure,
+        table,
+        video,
+        blockquote,
+        ul,
+        ol,
+        dl,
+        fieldset,
+        pre,
+        pre>code {
+            display: block;
+            margin: 0.5rem 0rem;
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        /* ----------- Grid columns and row ----------- */
+        .grid {
+            flex-wrap: wrap;
+        }
+
+        .row,
+        .grid {
+            display: flex;
+            margin: 1rem -0.5rem;
+            align-items: stretch;
+        }
+
+        .row [class*="col"],
+        .row>div,
+        .grid [class*="col"],
+        .grid>div {
+            padding: .5rem;
+        }
+
+        .row .col,
+        .row>div,
+        .grid .col,
+        .grid>div {
+            flex: 1 1 100%;
+        }
+
+        .row .col-2,
+        .grid .col-2 {
+            flex: 0 0 16.66%;
+        }
+
+        .row .col-3,
+        .grid .col-3 {
+            flex: 0 0 25%;
+        }
+
+        .row .col-4,
+        .grid .col-4 {
+            flex: 0 0 33.33%;
+        }
+
+        .row .col-6,
+        .grid .col-6 {
+            flex: 0 0 50%;
+        }
+
+        .row [class*="col"]>*,
+        .row>div>*,
+        .grid [class*="col"]>*,
+        .grid>div>* {
+            margin-top: 0;
+        }
+
+        @media (max-width: 40em) {
+
+            .row:not(.keep-width),
+            .grid:not(.keep-width) {
+                flex-direction: column !important;
+            }
+        }
+
+        /* ------------------ Buttons ----------------- */
+        button[disabled],
+        .btn[disabled] {
+            color: #777;
+            border-color: #BDBDBD;
+        }
+
+        button:not([disabled]):hover,
+        .btn:not([disabled]):hover {
+            color: #fff;
+            background: #0074D9;
+        }
+
+        button,
+        .btn {
+            display: inline-block;
+            border: 2px solid #0074D9;
+            outline: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            font: 400 16px Arial;
+            letter-spacing: 0.1rem;
+            color: #0074D9;
+            background-color: #f0f5f9;
+            border-radius: 0.3rem;
+            margin: .5rem;
+            white-space: nowrap;
+        }
+
+        /* ------------------- Links ------------------ */
+        a {
+            color: #0074D9;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        a:hover {
+            color: #0074D9;
+            border-color: #0074D9;
+        }
+
+        /* -------------- Form components ------------- */
+        textarea,
+        input:not([type=color]):not([type=range]):not([type=radio]):not([type=checkbox]),
+        select {
+            display: block;
+            background: #fff;
+            padding: .5rem;
+            border-radius: 0.3rem;
+            width: 100%;
+            border: 0.1rem solid #BDBDBD;
+            outline: none;
+        }
+
+        fieldset {
+            margin-top: 1rem;
+            border-radius: 0.3rem;
+            border: 0.1rem solid #BDBDBD;
+        }
+
+        textarea:focus,
+        input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]):hover,
+        select:hover {
+            border: 0.1rem solid #0074D9 !important;
+        }
+
+     
+
+        .toast-message {
+            position: fixed;
+            top: -100%;
+            left: 50%;
+
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            width: 400px;
+            font-size: 16px;
+            transition: all .5s;
+            z-index: 9999;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        @media (max-width: 424px) {
+            .toast-message {
+                width: calc(100% - 20px);
+            }
+        }
+
+        .toast-message.danger {
+            background: #b40101;
+            color: #f4f5f6;
+        }
+
+        .toast-message.success {
+            background: #0074D9;
+            color: #f4f5f6;
+        }
+
+        .toast-message .message {
+            padding: 20px 30px;
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="toast-message">
+        <div class="message">This is an Alert!</div>
+    </div>
     <main>
-        <a href="#" id="add_new_device_button"><u>Link new device</u></a>
-        <div id="content"></div>
+        <section>
+            <div id="content"></div>
+            <h3>To sync a new device enter the same key on all the devices</h3>
+            <form>
+                <fieldset>
+
+                    <legend>Sycn Setup</legend>
+                    <div class="row keep-flex">
+                        <div>
+                            <label for="device-name">Device Name <input id="device-name" type="text"
+                                    placeholder="Device name"></label>
+                        </div>
+                        <div>
+
+                            <label for="sync-key">Sync Key
+                                    <input id="sync-key" type="text" placeholder="Type your Password">
+                                <button type="button" id="copy-key"><svg xmlns="http://www.w3.org/2000/svg"
+                                        width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-copy">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg></button>
+                                <button type="button" id="paste-key"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                        height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-clipboard">
+                                        <path
+                                            d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                        </path>
+                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                    </svg></button></label>
+
+                        </div>
+                    </div>
+                    <button type="button" id="save">Save</button>
+                </fieldset>
+            </form>
+        </section>
+
     </main>
 </body>
 <script src="options.js"></script>
+
 </html>
