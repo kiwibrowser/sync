@@ -45,7 +45,7 @@ var deviceId = localStorage.deviceId;
 
 if (typeof localStorage.deviceId == 'undefined') {
     deviceId = "Device-" + Math.random();
-    localStorage.deviceId = deviceid;
+    localStorage.deviceId = deviceId;
 }
 
 
@@ -55,7 +55,6 @@ if (typeof localStorage.deviceId == 'undefined') {
 //Get input elements
 const input_synckey = document.getElementById("sync-key");
 const input_devicename = document.getElementById("device-name");
-const save_buttno = document.getElementById("save");
 
 
 

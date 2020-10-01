@@ -9,27 +9,33 @@ var firebaseConfig = {
 };
 
 async function updateRecordOnServer(i, record, commitInBatch) {
-     record.device = localStorage.deviceId;
-     var node = json_encode(record);
-     var iv = crypto.getRandomValues(new Uint8Array(16));
-     var encryptedData = await encrypt(string_to_array(node), base64_string_to_array(localStorage.pkey), iv, 'AES-CBC');
-     encryptedData = array_to_base64_string(encryptedData);
-     iv = array_to_base64_string(iv);
-     if (commitInBatch) {
-       if (batch && batch._mutations.length >= 400) {
-         batch.commit();
-         batch = db.batch();
-       } else if (!batch) {
-         batch = db.batch();
-       }
-       batch.set(db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.id), {'data': encryptedData, 'iv': iv});
-     } else {
-       db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.id).set({'data': encryptedData, 'iv': iv});
-     }
+  record.device = localStorage.deviceId;
+  var node = json_encode(record);
+  var iv = crypto.getRandomValues(new Uint8Array(16));
+  var encryptedData = await encrypt(string_to_array(node), base64_string_to_array(localStorage.pkey), iv, 'AES-CBC');
+  encryptedData = array_to_base64_string(encryptedData);
+  iv = array_to_base64_string(iv);
+  if (commitInBatch) {
+    if (batch && batch._mutations.length >= 400) {
+      batch.commit();
+      batch = db.batch();
+    } else if (!batch) {
+      batch = db.batch();
+    }
+    batch.set(db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.id), {
+      'data': encryptedData,
+      'iv': iv
+    });
+  } else {
+    db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.id).set({
+      'data': encryptedData,
+      'iv': iv
+    });
+  }
 }
 
 async function deleteRecordOnServer(i, record) {
-     db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.node.id).delete();
+  db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.node.id).delete();
 }
 
 async function pushLocalBookmarksToServer(items, localOnly) {
@@ -39,17 +45,32 @@ async function pushLocalBookmarksToServer(items, localOnly) {
   }
   if (!createdRoots[localStorage.deviceId]) {
     createdRoots[localStorage.deviceId] = true;
-    bookmarksToShowInTheUI.push({'id': localStorage.deviceId + '|0', 'icon': 'fas fa-mobile-android-alt', 'type': 'device', 'title': 'This device', 'parentId': null, 'device': localStorage.deviceId});
+    bookmarksToShowInTheUI.push({
+      'id': localStorage.deviceId + '|0',
+      'icon': 'fas fa-mobile-android-alt',
+      'type': 'device',
+      'title': 'This device',
+      'parentId': null,
+      'device': localStorage.deviceId
+    });
   }
   for (var i = 0, l = items.length; i < l; i++) {
     var d = items[i];
     if (d.parentId == 'root________') // Used in Firefox
       d.parentId = '0';
     var isFolder = d.dateGroupModified || d.children || typeof d.url == 'undefined' || d.type == 'folder';
-    var obj = {'dateAdded': d.dateAdded, 'id': localStorage.deviceId + '|' + d.id, 'index': d.index, 'parentId': localStorage.deviceId + '|' + d.parentId, 'title': d.title, 'url': d.url, 'device': localStorage.deviceId};
+    var obj = {
+      'dateAdded': d.dateAdded,
+      'id': localStorage.deviceId + '|' + d.id,
+      'index': d.index,
+      'parentId': localStorage.deviceId + '|' + d.parentId,
+      'title': d.title,
+      'url': d.url,
+      'device': localStorage.deviceId
+    };
     pushItemToUI(obj);
     if (!localOnly) {
-      var alreadyPresent = bookmarksDownloadedFromServer.some(function(item) {
+      var alreadyPresent = bookmarksDownloadedFromServer.some(function (item) {
         return item.id == obj.id;
       });
       if (!alreadyPresent)
@@ -71,11 +92,24 @@ var pushItemToUI = function (node) {
   if (!createdRoots[node.id.split('|')[0]]) {
     createdRoots[node.id.split('|')[0]] = true;
     if (node.id.split('|')[0] == localStorage.deviceId)
-      bookmarksToShowInTheUI.push({'id': localStorage.deviceId + '|0', 'icon': 'fas fa-mobile-android-alt', 'type': 'device', 'title': 'This device', 'parentId': null, 'device': localStorage.deviceId});
+      bookmarksToShowInTheUI.push({
+        'id': localStorage.deviceId + '|0',
+        'icon': 'fas fa-mobile-android-alt',
+        'type': 'device',
+        'title': 'This device',
+        'parentId': null,
+        'device': localStorage.deviceId
+      });
     else
-      bookmarksToShowInTheUI.push({'id': node.id.split('|')[0] + '|0', 'icon': 'fas fa-mobile-android-alt', 'type': 'device', 'title': node.id.split('|')[0], 'parentId': null});
+      bookmarksToShowInTheUI.push({
+        'id': node.id.split('|')[0] + '|0',
+        'icon': 'fas fa-mobile-android-alt',
+        'type': 'device',
+        'title': node.id.split('|')[0],
+        'parentId': null
+      });
   }
-  var alreadyPresent = bookmarksToShowInTheUI.some(function(item) {
+  var alreadyPresent = bookmarksToShowInTheUI.some(function (item) {
     return item.id == node.id;
   });
   if (!alreadyPresent) {
@@ -84,7 +118,9 @@ var pushItemToUI = function (node) {
 }
 
 var removeItemFromUI = function (node) {
-  var indexToRemove = bookmarksToShowInTheUI.map(function(item) { return item.id; }).indexOf(node.id);
+  var indexToRemove = bookmarksToShowInTheUI.map(function (item) {
+    return item.id;
+  }).indexOf(node.id);
   bookmarksToShowInTheUI.splice(indexToRemove, 1);
 }
 
@@ -107,61 +143,97 @@ chrome.bookmarks.getTree(function (tree) {
   pushLocalBookmarksToServer(tree[0].children, localOnly = true);
 });
 console.log('Local bookmarks loaded');
-chrome.bookmarks.onCreated.addListener((i, record) => { record.id = localStorage.deviceId + '|' + record.id;           pushItemToUI(record);     sortBookmarksInTheUI(); localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI); });
-chrome.bookmarks.onRemoved.addListener((i, record) => { record.node.id = localStorage.deviceId + '|' + record.node.id; removeItemFromUI(record); localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI); });
+chrome.bookmarks.onChanged.addListener((i, record) => {
+  record.id = localStorage.deviceId + '|' + record.id;
+  pushItemToUI(record);
+  sortBookmarksInTheUI();
+  localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
+});
+chrome.bookmarks.onCreated.addListener((i, record) => {
+  record.id = localStorage.deviceId + '|' + record.id;
+  pushItemToUI(record);
+  sortBookmarksInTheUI();
+  localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
+});
+chrome.bookmarks.onRemoved.addListener((i, record) => {
+  record.node.id = localStorage.deviceId + '|' + record.node.id;
+  removeItemFromUI(record);
+  localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
+});
 
-firebase.auth().onAuthStateChanged(async function(user) {
+firebase.auth().onAuthStateChanged(async function (user) {
   console.log('onAuthStateChanged');
   if (user) {
-   console.log('Logged-in under UID: ' + user.uid);
-   localStorage.uid = user.uid;
+    console.log('Logged-in under UID: ' + user.uid);
+    localStorage.uid = user.uid;
 
-   bookmarksDownloadedFromServer = [];
-   bookmarksToShowInTheUI = [];
-   createdRoots = [];
+    bookmarksDownloadedFromServer = [];
+    bookmarksToShowInTheUI = [];
+    createdRoots = [];
 
-   chrome.bookmarks.onCreated.addListener((i, record) => { record.id = localStorage.deviceId + '|' + record.id;           updateRecordOnServer(i, record); });
-   chrome.bookmarks.onRemoved.addListener((i, record) => { record.node.id = localStorage.deviceId + '|' + record.node.id; deleteRecordOnServer(i, record); });
-   console.log('onAuthStateChanged calling base64_string_to_array');
-   db.collection('users').doc(localStorage.uid).collection('bookmarks').onSnapshot(async function(querySnapshot) {
-       console.log('Receiving query snapshot - ' + querySnapshot.docChanges().length);
-       await Promise.all(querySnapshot.docChanges().map(async function(change) {
-             var doc = change.doc;
-             await decrypt(base64_string_to_array(doc.data().data), base64_string_to_array(localStorage.pkey),
-                   base64_string_to_array(doc.data().iv), 'AES-CBC').then(function (decryptedNode) {
-             decryptedNode = JSON.parse(array_to_string(decryptedNode));
-             if (change.type == 'removed') {
-               var indexToRemove = bookmarksDownloadedFromServer.map(function(item) { return item.id; }).indexOf(decryptedNode.id);
-               bookmarksDownloadedFromServer.splice(indexToRemove, 1);
-               indexToRemove = bookmarksToShowInTheUI.map(function(item) { return item.id; }).indexOf(decryptedNode.id);
-               bookmarksToShowInTheUI.splice(indexToRemove, 1);
-               return ;
-             } else if (change.type == 'added' || change.type == 'modified') {
-               var alreadyPresent = bookmarksDownloadedFromServer.some(function(item) {
-                 return item.id == decryptedNode.id;
-               });
-               if (alreadyPresent) {
-                 var indexToRemove = bookmarksDownloadedFromServer.map(function(item) { return item.id; }).indexOf(decryptedNode.id);
-                 bookmarksDownloadedFromServer.splice(indexToRemove, 1);
-                 indexToRemove = bookmarksToShowInTheUI.map(function(item) { return item.id; }).indexOf(decryptedNode.id);
-                 bookmarksToShowInTheUI.splice(indexToRemove, 1);
-               }
-               bookmarksDownloadedFromServer.push(decryptedNode);
-               pushItemToUI(decryptedNode);
-             }
-           });
-       }));
-       sortBookmarksInTheUI();
-       localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
-       console.log('Updated data from server, we have: ' + bookmarksDownloadedFromServer.length + ' records from the server and ' + bookmarksToShowInTheUI.length + ' in the UI');
-       if (!initialSyncDone) {
-         chrome.bookmarks.getTree(function (tree) {
-           pushLocalBookmarksToServer(tree[0].children, localOnly = false);
-         });
-         console.log('Local bookmarks have been pushed to server as part of the initial sync');
-         initialSyncDone = true;
-       }
-   });
+    //Update bookmark on server on locally changed
+    chrome.bookmarks.onChanged.addListener((i, record) => {
+      record.id = localStorage.deviceId + '|' + record.id;
+      updateRecordOnServer(i, record);
+    });
+    //Update bookamark on server on locally created
+    chrome.bookmarks.onCreated.addListener((i, record) => {
+      record.id = localStorage.deviceId + '|' + record.id;
+      updateRecordOnServer(i, record);
+    });
+    //Remove bookmark from server on locally removed
+    chrome.bookmarks.onRemoved.addListener((i, record) => {
+      record.node.id = localStorage.deviceId + '|' + record.node.id;
+      deleteRecordOnServer(i, record);
+    });
+    console.log('onAuthStateChanged calling base64_string_to_array');
+    db.collection('users').doc(localStorage.uid).collection('bookmarks').onSnapshot(async function (querySnapshot) {
+      console.log('Receiving query snapshot - ' + querySnapshot.docChanges().length);
+      await Promise.all(querySnapshot.docChanges().map(async function (change) {
+        var doc = change.doc;
+        await decrypt(base64_string_to_array(doc.data().data), base64_string_to_array(localStorage.pkey),
+          base64_string_to_array(doc.data().iv), 'AES-CBC').then(function (decryptedNode) {
+          decryptedNode = JSON.parse(array_to_string(decryptedNode));
+          if (change.type == 'removed') {
+            var indexToRemove = bookmarksDownloadedFromServer.map(function (item) {
+              return item.id;
+            }).indexOf(decryptedNode.id);
+            bookmarksDownloadedFromServer.splice(indexToRemove, 1);
+            indexToRemove = bookmarksToShowInTheUI.map(function (item) {
+              return item.id;
+            }).indexOf(decryptedNode.id);
+            bookmarksToShowInTheUI.splice(indexToRemove, 1);
+            return;
+          } else if (change.type == 'added' || change.type == 'modified') {
+            var alreadyPresent = bookmarksDownloadedFromServer.some(function (item) {
+              return item.id == decryptedNode.id;
+            });
+            if (alreadyPresent) {
+              var indexToRemove = bookmarksDownloadedFromServer.map(function (item) {
+                return item.id;
+              }).indexOf(decryptedNode.id);
+              bookmarksDownloadedFromServer.splice(indexToRemove, 1);
+              indexToRemove = bookmarksToShowInTheUI.map(function (item) {
+                return item.id;
+              }).indexOf(decryptedNode.id);
+              bookmarksToShowInTheUI.splice(indexToRemove, 1);
+            }
+            bookmarksDownloadedFromServer.push(decryptedNode);
+            pushItemToUI(decryptedNode);
+          }
+        });
+      }));
+      sortBookmarksInTheUI();
+      localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
+      console.log('Updated data from server, we have: ' + bookmarksDownloadedFromServer.length + ' records from the server and ' + bookmarksToShowInTheUI.length + ' in the UI');
+      if (!initialSyncDone) {
+        chrome.bookmarks.getTree(function (tree) {
+          pushLocalBookmarksToServer(tree[0].children, localOnly = false);
+        });
+        console.log('Local bookmarks have been pushed to server as part of the initial sync');
+        initialSyncDone = true;
+      }
+    });
   } else {
     // No user is signed in.
   }
@@ -185,7 +257,6 @@ async function connect_to_firebase() {
 }
 
 async function main() {
-
   if (typeof localStorage.passphrase == 'undefined' || !localStorage.passphrase) {
     console.log('First initialization, we are generating a random passphrase');
     localStorage.passphrase = array_to_base64_string(generate_passphrase());
@@ -196,19 +267,19 @@ async function main() {
     await connect_to_firebase();
   } else {
     var waitForDeviceId = setInterval(async function () {
-        console.log('Waiting for device id');
-        if (typeof localStorage.deviceId != 'undefined' && localStorage.deviceId && localStorage.deviceId != null) {
-          await connect_to_firebase();
-          clearInterval(waitForDeviceId);
-        }
+      console.log('Waiting for device id');
+      if (typeof localStorage.deviceId != 'undefined' && localStorage.deviceId && localStorage.deviceId != null) {
+        await connect_to_firebase();
+        clearInterval(waitForDeviceId);
+      }
     }, 2000);
   }
 }
 
 //Message listener
 chrome.runtime.onMessage.addListener((request) => {
-  if (request === "showOptions") {//Check the request
-    chrome.runtime.openOptionsPage();//Open the settings page 
+  if (request === "showOptions") { //Check the request
+    chrome.runtime.openOptionsPage(); //Open the settings page 
   }
 });
 main();

@@ -73,7 +73,7 @@ function generateListItem(query, item) {
     a.addEventListener('click', expand);
     li.appendChild(a);
   }
-  const span = document.createElement('span');
+  
   itemlabeltext = document.createTextNode(item.title);
   sanitizedtext = itemlabeltext.nodeValue;
   if (query && query.length > 0) {
@@ -83,17 +83,16 @@ function generateListItem(query, item) {
     var reg = new RegExp(queryx.join('|'), 'gi');
     sanitizedtext = sanitizedtext.replace(reg, '<b>$&</b>');
   }
-  itemlabel = document.createElement('span');
   if (item.device && item.device != localStorage.deviceId && document.getElementById('searchField').value)
     sanitizedtext += ' <span class="source">' + item.device + '</span>';
-  itemlabel.innerHTML = ' ' + sanitizedtext;
+  
   if (item.url) {//Check if it's a bookmark (Check Two)
     const itemlink = document.createElement('a');
+    itemlink.classList="item-label";
     itemlink.href = item.url;
     itemlink.target = '_blank';
-    itemlink.appendChild(itemlabel);
-    span.appendChild(itemlink);
-    li.appendChild(span);
+    itemlink.innerHTML = ' ' + sanitizedtext;
+    li.appendChild(itemlink);
   } else {
     a.innerHTML = folderIcon+sanitizedtext;
   }
