@@ -37,7 +37,9 @@ var notification = new Notif({
     autoClose: true,
     autoCloseTimeout: 2000
 });
-
+//Get input elements
+const input_synckey = document.getElementById("sync-key");
+const input_devicename = document.getElementById("device-name");
 //Get sync key
 var passphrase = localStorage.passphrase;
 //Get device name (id)
@@ -45,16 +47,10 @@ var deviceId = localStorage.deviceId;
 
 if (typeof localStorage.deviceId == 'undefined') {
     deviceId = "Device-" + Math.random();
-    localStorage.deviceId = deviceId;
+}else{
+    input_devicename.disabled=true;
 }
 
-
-
-
-
-//Get input elements
-const input_synckey = document.getElementById("sync-key");
-const input_devicename = document.getElementById("device-name");
 
 
 

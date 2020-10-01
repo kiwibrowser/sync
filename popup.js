@@ -65,10 +65,8 @@ function generateListItem(query, item) {
   li.tabIndex = 0;
   const a = document.createElement('a');
   if (hasChildren(item.id)) {//Check if it's a bookmark ( Check One)
-    
     a.href = '#';
     a.tabIndex = -1;
-    
     a.classList.add('fld-label');
     a.addEventListener('click', expand);
     li.appendChild(a);
