@@ -8,9 +8,9 @@ var firebaseConfig = {
   storageBucket: 'sync-internal.appspot.com'
 };
 async function updateRecordOnServer(i, record, commitInBatch) {
-  console.log("updateRecordOnServer : i=" + i + "  record: " + record.id);
   record.device = localStorage.deviceId;
   var node = json_encode(record);
+  console.log("node encoded -> "+node);
   var iv = crypto.getRandomValues(new Uint8Array(16));
   var encryptedData = await encrypt(string_to_array(node), base64_string_to_array(localStorage.pkey), iv, 'AES-CBC');
   encryptedData = array_to_base64_string(encryptedData);
@@ -28,15 +28,25 @@ async function updateRecordOnServer(i, record, commitInBatch) {
     });
   } else {
     db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.id).set({
-      'data': encryptedData,
-      'iv': iv
-    });
+        'data': encryptedData,
+        'iv': iv
+      }).then(function () {
+        console.log(" ---- Bookmark set with ID: " + record.id);
+      })
+      .catch(function (error) {
+        console.error("Error on set bookmark with ID : " + record.id, error);
+      });
   }
 }
 
 async function deleteRecordOnServer(i, record) {
-  console.log("deleteRecordOnServer : i=" + i + "  record: " + record.id + "  | record.node.id " + record.node.id);
-  db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.node.id).delete();
+  db.collection('users').doc(localStorage.uid).collection('bookmarks').doc(record.node.id).delete()
+    .then(function () {
+      console.log(" ---- Deleted bookmark with ID: ", record.node.id);
+    })
+    .catch(function (error) {
+      console.error("Error deleting bookmark with ID: " + record.node.id, error);
+    });
 }
 
 async function pushLocalBookmarksToServer(items, localOnly) {
@@ -90,15 +100,9 @@ async function pushLocalBookmarksToServer(items, localOnly) {
 }
 
 var pushItemToUI = function (node) {
-  console.log("pushItemToU -> node " + node.id);
-  
-  if (node.id.split('|').length < 3) {
-    console.log(node.id.split('|').length);
     if (!createdRoots[node.id.split('|')[0]]) {
-      console.log("notCreatedRoots");
       createdRoots[node.id.split('|')[0]] = true;
       if (node.id.split('|')[0] == localStorage.deviceId) {
-        console.log("nodeidsplit -> " + node.id.split('|')[0]);
         bookmarksToShowInTheUI.push({
           'id': localStorage.deviceId + '|0',
           'icon': 'fas fa-mobile-android-alt',
@@ -123,7 +127,6 @@ var pushItemToUI = function (node) {
     if (!alreadyPresent) {
       bookmarksToShowInTheUI.push(node);
     }
-  }
 }
 
 var removeItemFromUI = function (node) {
@@ -152,17 +155,20 @@ chrome.bookmarks.getTree(function (tree) {
   pushLocalBookmarksToServer(tree[0].children, localOnly = true);
 });
 console.log('Local bookmarks loaded');
+//Update bookmark on server on locally changed
+
 chrome.bookmarks.onChanged.addListener((i, record) => {
-  record.id = localStorage.deviceId + '|' + record.id;
-  console.log("146 : i=" + i + "  record: " + record.id);
+  record.id = localStorage.deviceId + '|' + i;
   pushItemToUI(record);
   sortBookmarksInTheUI();
+  updateRecordOnServer(i, record);
   localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
 });
 
 //Update bookamark on server on locally created
 chrome.bookmarks.onCreated.addListener((i, record) => {
   record.id = localStorage.deviceId + '|' + i;
+  record.parentId=localStorage.deviceId + '|' + record.parentId;
   pushItemToUI(record);
   sortBookmarksInTheUI();
   updateRecordOnServer(i, record);
@@ -173,8 +179,9 @@ chrome.bookmarks.onCreated.addListener((i, record) => {
 chrome.bookmarks.onRemoved.addListener((i, record) => {
   record.id = localStorage.deviceId + '|' + i;
   record.node.id = localStorage.deviceId + '|' + record.node.id;
-  deleteRecordOnServer(i, record);
   removeItemFromUI(record);
+  sortBookmarksInTheUI(); 
+  deleteRecordOnServer(i, record);
   localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
 });
 
@@ -188,13 +195,7 @@ firebase.auth().onAuthStateChanged(async function (user) {
     bookmarksToShowInTheUI = [];
     createdRoots = [];
 
-    //Update bookmark on server on locally changed
-    chrome.bookmarks.onChanged.addListener((i, record) => {
-      console.log(JSON.parse(record));
-      console.log("176 : i=" + i + "  record: " + record.id);
-      record.id = localStorage.deviceId + '|' + i;
-      updateRecordOnServer(i, record);
-    });
+
 
 
     console.log('onAuthStateChanged calling base64_string_to_array');
@@ -230,7 +231,6 @@ firebase.auth().onAuthStateChanged(async function (user) {
               bookmarksToShowInTheUI.splice(indexToRemove, 1);
             }
             bookmarksDownloadedFromServer.push(decryptedNode);
-            console.log(" 228 -> OPS");
             pushItemToUI(decryptedNode);
           }
         });

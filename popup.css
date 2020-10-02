@@ -25,6 +25,7 @@ body {
 }
 .item-label{
   display: block;
+  overflow-wrap: break-word;
 }
 
 

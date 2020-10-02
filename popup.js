@@ -64,13 +64,6 @@ function generateListItem(query, item) {
   li.id = 'item-' + item.id;
   li.tabIndex = 0;
   const a = document.createElement('a');
-  if (hasChildren(item.id)) {//Check if it's a bookmark ( Check One)
-    a.href = '#';
-    a.tabIndex = -1;
-    a.classList.add('fld-label');
-    a.addEventListener('click', expand);
-    li.appendChild(a);
-  }
   
   itemlabeltext = document.createTextNode(item.title);
   sanitizedtext = itemlabeltext.nodeValue;
@@ -92,7 +85,13 @@ function generateListItem(query, item) {
     itemlink.innerHTML = ' ' + sanitizedtext;
     li.appendChild(itemlink);
   } else {
-    a.innerHTML = folderIcon+sanitizedtext;
+    a.href = '#';
+    a.tabIndex = -1;
+    a.classList.add('fld-label');
+    a.addEventListener('click', expand);
+    let empty = (hasChildren(item.id))? "" : " (empty)";
+    a.innerHTML = folderIcon+sanitizedtext+empty;
+    li.appendChild(a);
   }
   
   return li;
