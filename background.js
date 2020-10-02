@@ -128,7 +128,14 @@ var pushItemToUI = function (node) {
       bookmarksToShowInTheUI.push(node);
     }
 }
-
+var getItemById= (edited)=>{
+  var indexToEdit = bookmarksToShowInTheUI.map(function (item) {
+    return item.id;
+  }).indexOf(edited.id);
+  bookmarksToShowInTheUI[indexToEdit].title=edited.title;
+  bookmarksToShowInTheUI[indexToEdit].url=edited.url;
+  return bookmarksToShowInTheUI[indexToEdit];
+}
 var removeItemFromUI = function (node) {
   var indexToRemove = bookmarksToShowInTheUI.map(function (item) {
     return item.id;
@@ -159,9 +166,9 @@ console.log('Local bookmarks loaded');
 
 chrome.bookmarks.onChanged.addListener((i, record) => {
   record.id = localStorage.deviceId + '|' + i;
-  pushItemToUI(record);
+  var editedRecord = getItemById(record);
   sortBookmarksInTheUI();
-  updateRecordOnServer(i, record);
+  updateRecordOnServer(i, editedRecord);
   localStorage.remoteBookmarks = json_encode(bookmarksToShowInTheUI);
 });
 

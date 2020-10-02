@@ -154,7 +154,7 @@
 
         /* -------------- Form components ------------- */
         textarea,
-        input:not([type=color]):not([type=range]):not([type=radio]):not([type=checkbox]),
+        input:not([type=range]):not([type=radio]):not([type=checkbox]),
         select {
             display: block;
             background: #fff;
@@ -172,7 +172,7 @@
         }
 
         textarea:focus,
-        input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]):hover,
+        input:not([type=checkbox]):not([type=radio]):not([type=range]):not([disabled]):hover,
         select:hover {
             border: 0.1rem solid #0074D9 !important;
         }
@@ -214,6 +214,61 @@
             padding: 20px 30px;
             text-align: center;
         }
+
+/* ------------------ Heading ----------------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 1em 0 0;
+}
+
+h1,legend  {
+  font-size: 2.6em;
+}
+
+h2 {
+  font-size: 2.0em;
+}
+
+h3 {
+  font-size: 1.6em;
+}
+
+h4{
+  font-size: 1.4em;
+}
+
+h5 {
+  font-size: 1.2em;
+}
+
+h6 {
+  font-size: 1em;
+}
+p strong,
+p b {
+  color: #191919;
+}
+
+h1+h2,
+h2+h3,
+h3+h4,
+h4+h5,
+h5+h6 {
+  margin: 0.5em 0 0;
+}
+        ._a-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+._g-center{
+  display: grid;
+  place-items: center;
+}
     </style>
 </head>
 
@@ -224,18 +279,21 @@
     <main>
         <section>
             <div id="content"></div>
-            <h3>To sync a new device enter the same key on all the devices</h3>
+            
             <form>
                 <fieldset>
 
-                    <legend>Sycn Setup</legend>
-                    <div class="row keep-flex">
-                        <div>
+                    <legend>Sync Setup</legend><h4> To enable Sync on this device pick a name</h4>
+                    <div class="row">
+                        <div class="col-4">
+                            
                             <label for="device-name">Device Name <input id="device-name" type="text"
                                     placeholder="Device name"></label>
                         </div>
-                        <div>
-
+                    </div> <h4>To sync between devices enter the same key on all the devices</h4>
+                    <div class="row">
+                        <div class="col-4">
+                           
                             <label for="sync-key">Sync Key
                                     <input id="sync-key" type="text" placeholder="Type your Password">
                                 <button type="button" id="copy-key"><svg xmlns="http://www.w3.org/2000/svg"

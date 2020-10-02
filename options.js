@@ -48,6 +48,7 @@ var deviceId = localStorage.deviceId;
 if (typeof localStorage.deviceId == 'undefined') {
     deviceId = "Device-" + Math.random();
 }else{
+    
     input_devicename.disabled=true;
 }
 
