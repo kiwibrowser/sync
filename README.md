@@ -33,11 +33,12 @@ WARNING: THIS EXTENSION IS IN DEVELOPMENT:
   or if you are not ready to accept to lose your local bookmarks in case of a bug.
 
 What's missing:
-  - Mobile UI (to use inside Kiwi!)
-  - UI to add a new device / remove a device
-  - UI to delete data from the server
-  - UI to choose the Firebase server where to sync to (for users who want to host their own instance)
-  - A reverse proxy for Chinese users to be able to access Firestore from China
+  - [x] Mobile UI (to use inside Kiwi!) 
+  - [x] UI to add a new device
+  - [ ] UI to remove a device
+  - [ ] UI to delete data from the server
+  - [ ] UI to choose the Firebase server where to sync to (for users who want to host their own instance)
+  - [ ] A reverse proxy for Chinese users to be able to access Firestore from China
 
 Precepts:
   - Sync server *can* be compromised, and this should *not* impact user privacy.
