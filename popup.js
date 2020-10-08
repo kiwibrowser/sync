@@ -20,14 +20,14 @@ var data = [];
 //Event listener for button to open settings page
 let btt = document.querySelector("#settings-icon");
 btt.addEventListener("click", () => {
-    chrome.runtime.sendMessage("showOptions");
+    chrome.runtime.sendMessage({type:"showOptions"});
 });
 
 
 function currently_selected_elem(){
   return document.querySelector('li.selected');
 }
-
+//Get top folders - Devices folder 
 function orphans() {
   return data.filter(function(item) {
     return item.parentId === null;

@@ -296,9 +296,15 @@ async function main() {
 }
 
 //Message listener
-chrome.runtime.onMessage.addListener((request) => {
-  if (request === "showOptions") { //Check the request
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type == "showOptions") { //Check the request
     chrome.runtime.openOptionsPage(); //Open the settings page 
   }
+  if(request.type == "deleteDevice"){
+    console.log("Delete device : "+request.value);
+    sendResponse({error: false});
+  }
+  return true;
+
 });
 main();

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sync - Sttings</title>
+    <title>Sync - Settings</title>
     <style>
         /* ---------------- Basic reset and improvements --------------- */
         * {
@@ -177,7 +177,7 @@
             border: 0.1rem solid #0074D9 !important;
         }
 
-     
+
 
         .toast-message {
             position: fixed;
@@ -215,60 +215,96 @@
             text-align: center;
         }
 
-/* ------------------ Heading ----------------- */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 1em 0 0;
-}
+        /* ------------------ Heading ----------------- */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 1em 0 0;
+        }
 
-h1,legend  {
-  font-size: 2.6em;
-}
+        h1,
+        legend {
+            font-size: 2.6em;
+        }
 
-h2 {
-  font-size: 2.0em;
-}
+        h2 {
+            font-size: 2.0em;
+        }
 
-h3 {
-  font-size: 1.6em;
-}
+        h3 {
+            font-size: 1.6em;
+        }
 
-h4{
-  font-size: 1.4em;
-}
+        h4 {
+            font-size: 1.4em;
+        }
 
-h5 {
-  font-size: 1.2em;
-}
+        h5 {
+            font-size: 1.2em;
+        }
 
-h6 {
-  font-size: 1em;
-}
-p strong,
-p b {
-  color: #191919;
-}
+        h6 {
+            font-size: 1em;
+        }
 
-h1+h2,
-h2+h3,
-h3+h4,
-h4+h5,
-h5+h6 {
-  margin: 0.5em 0 0;
-}
+        p strong,
+        p b {
+            color: #191919;
+        }
+
+        h1+h2,
+        h2+h3,
+        h3+h4,
+        h4+h5,
+        h5+h6 {
+            margin: 0.5em 0 0;
+        }
+
         ._a-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-._g-center{
-  display: grid;
-  place-items: center;
-}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        ._g-center {
+            display: grid;
+            place-items: center;
+        }
+        #devices-list ul{
+            list-style:none;
+            padding:.5rem;
+        }
+        #devices-list li{
+            width: 100%;
+            border-radius: .3rem;
+            border: 0;
+            padding: 1rem;
+            margin: .3rem;
+            background: #eff0f5;
+            position: relative;
+        }
+
+        .itemInner {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        }
+
+        .itemInner p {
+        margin: 0;
+        pointer-events: none;
+        }
+
+        .removeItemBtn {
+        position: absolute;
+        right: 4px;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        }
     </style>
 </head>
 
@@ -277,49 +313,55 @@ h5+h6 {
         <div class="message">This is an Alert!</div>
     </div>
     <main>
-        <section>
-            <div id="content"></div>
+
+        <fieldset>
+
+            <legend>Sync Setup</legend>
+            <h4> To enable Sync on this device pick a name</h4>
+            <div class="row">
+                <div class="col-4">
+
+                    <label for="device-name">Device Name <input id="device-name" type="text"
+                            placeholder="Device name"></label>
+                </div>
+            </div>
+            <h4>To sync between devices enter the same key on all the devices</h4>
+            <div class="row">
+                <div class="col-4">
+
+                    <label for="sync-key">Sync Key
+                        <input id="sync-key" type="text" placeholder="Type your Password">
+                        <button type="button" id="copy-key"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg></button>
+                        <button type="button" id="paste-key"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                </path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            </svg></button></label>
+
+                </div>
+            </div>
+            </div>
             
-            <form>
-                <fieldset>
+            <button type="button" id="save">Save</button>
+        </fieldset>
+        <fieldset>
+            <legend>Your Devices</legend>
+            <h4>From below manage your devices, you will not lose the bookmarks on device you delete </h4>
+            <div class="row">
+                <div class="col-4">
+                    <div id="devices-list">
 
-                    <legend>Sync Setup</legend><h4> To enable Sync on this device pick a name</h4>
-                    <div class="row">
-                        <div class="col-4">
-                            
-                            <label for="device-name">Device Name <input id="device-name" type="text"
-                                    placeholder="Device name"></label>
-                        </div>
-                    </div> <h4>To sync between devices enter the same key on all the devices</h4>
-                    <div class="row">
-                        <div class="col-4">
-                           
-                            <label for="sync-key">Sync Key
-                                    <input id="sync-key" type="text" placeholder="Type your Password">
-                                <button type="button" id="copy-key"><svg xmlns="http://www.w3.org/2000/svg"
-                                        width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-copy">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg></button>
-                                <button type="button" id="paste-key"><svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                        height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-clipboard">
-                                        <path
-                                            d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
-                                        </path>
-                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                                    </svg></button></label>
-
-                        </div>
                     </div>
-                    <button type="button" id="save">Save</button>
-                </fieldset>
-            </form>
-        </section>
-
+                </div>
+            </div>
+        </fieldset>
     </main>
 </body>
 <script src="options.js"></script>

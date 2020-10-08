@@ -37,6 +37,40 @@ var notification = new Notif({
     autoClose: true,
     autoCloseTimeout: 2000
 });
+var deleteIcon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+//Get top folders - Devices folder 
+function orphans() {
+    return data.filter(function(item) {
+      return item.parentId === null;
+    });
+  }
+//Get bookmarks
+var data ={};
+if (typeof localStorage.remoteBookmarks != 'undefined')
+  data = JSON.parse(localStorage.remoteBookmarks);
+//Initialize and show devices on option page
+const devices_list= document.getElementById("devices-list");
+var devices=orphans();//Folders without parent are basically the devices folders
+var str='<ul>';
+
+devices.forEach(element => {
+    str+='<li><div class="itemInner"><p>'+element.id.split('|')[0]+'</p><i class="removeItemBtn">'+deleteIcon+'</i></div></li>';
+});
+str+="</ul>";
+devices_list.innerHTML=str;
+const removeButtons=document.getElementsByClassName("removeItemBtn");
+Array.prototype.forEach.call(removeButtons, function(el, i){
+    el.onclick=()=>{
+        var device=el.parentNode.querySelector('p').innerHTML;
+        chrome.runtime.sendMessage({type:"deleteDevice",value:device},function(response) {
+            console.log(response);
+            if(!response.error){
+                notification.showN('Delete is not possible yet !', 'danger');
+            }
+          });
+
+    }
+});
 //Get input elements
 const input_synckey = document.getElementById("sync-key");
 const input_devicename = document.getElementById("device-name");
