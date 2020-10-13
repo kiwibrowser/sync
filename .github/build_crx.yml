@@ -1,0 +1,59 @@
+# Build crx for Kiwi Browser Sync
+name: automatic build of crx
+
+# Controls when the action will run. Triggers the workflow on push or pull request events
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '*.md'
+      - '*.yml'
+    branches: [ master ]
+  pull_request:
+    paths-ignore:
+      - '*.md'
+      - '*.yml'
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checking-out source-code in $GITHUB_WORKSPACE
+        uses: actions/checkout@v2
+
+      - uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
+        with:
+            extensionDir: '.'
+            crxFilePath: './extension.zip'
+
+      - uses: cardinalby/webext-buildtools-chrome-crx-action@v2
+        with:
+           zipFilePath: './extension.zip',
+           crxFilePath: './extension.crx'
+
+      - name: Creating release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_id }}
+          release_name: Generation ${{ github.run_id }}
+          draft: false
+          prerelease: true
+          body: |
+            This release was automatically generated from GitHub ${{ github.ref }} in run ID ${{ github.run_id }}.
+
+      - name: Uploading CRX into GitHub release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./extension.crx
+          asset_name: Kiwi-Sync-${{ github.run_id }}.crx
+          asset_content_type: application/x-chrome-extension
