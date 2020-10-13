@@ -32,7 +32,7 @@ jobs:
 
       - uses: cardinalby/webext-buildtools-chrome-crx-action@v2
         with:
-           zipFilePath: './extension.zip',
+           zipFilePath: './extension.zip'
            crxFilePath: './extension.crx'
 
       - name: Creating release
